@@ -1,0 +1,889 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#090909" />
+  <meta name="description" content="Find My Motive – UK-wide nightlife and social discovery. Find pub nights, club nights, raves, house parties and more near you." />
+  <title>Find My Motive – Find What's Happening Near You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #090909; --surface: #111111; --surface2: #1a1a1a; --surface3: #222222;
+      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+      --text: #f5f5f5; --text2: #a0a0a0; --text3: #666;
+      --neon: #C8FF00; --neon2: #00FFD1; --neon3: #FF6BFF;
+      --danger: #FF4444; --success: #22C55E;
+      --radius: 16px; --radius-sm: 10px;
+      --font-head: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+      --nav-h: 64px; --bottom-nav: 72px;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .light-mode {
+      --bg: #f8f8f6; --surface: #ffffff; --surface2: #f0f0ee; --surface3: #e8e8e6;
+      --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+      --text: #111111; --text2: #555555; --text3: #999;
+      --neon: #5500CC; --neon2: #0077AA;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    h1,h2,h3,h4,h5 { font-family: var(--font-head); font-weight: 700; letter-spacing: -0.02em; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }
+    input, textarea, select { font-family: var(--font-body); }
+    a { text-decoration: none; color: inherit; }
+    ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .app { min-height: 100vh; background: var(--bg); }
+    /* NAV */
+    .top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--nav-h); background: rgba(9,9,9,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+    .light-mode .top-nav { background: rgba(248,248,246,0.9); }
+    .nav-logo { font-family: var(--font-head); font-size: 20px; font-weight: 800; letter-spacing: -0.03em; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .nav-logo span { color: var(--neon); }
+    .nav-links { display: flex; gap: 4px; align-items: center; }
+    @media(max-width:768px) { .nav-links { display: none; } }
+    .nav-link { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--text2); transition: all var(--transition); cursor: pointer; }
+    .nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface2); }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-primary { background: var(--neon); color: #000; font-weight: 700; font-size: 13px; padding: 9px 18px; border-radius: 10px; transition: all var(--transition); letter-spacing: 0.01em; cursor: pointer; }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-ghost { color: var(--text2); font-size: 13px; font-weight: 500; padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); transition: all var(--transition); cursor: pointer; }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+    .btn-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); color: var(--text2); transition: all var(--transition); font-size: 16px; cursor: pointer; }
+    .btn-icon:hover { color: var(--text); background: var(--surface2); border-color: var(--border2); }
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; height: var(--bottom-nav); background: rgba(9,9,9,0.92); backdrop-filter: blur(24px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; padding: 0 8px; }
+    .light-mode .bottom-nav { background: rgba(248,248,246,0.95); }
+    @media(min-width:769px) { .bottom-nav { display: none; } }
+    .bnav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 12px; transition: all var(--transition); color: var(--text3); font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; cursor: pointer; }
+    .bnav-item.active { color: var(--neon); }
+    .bnav-icon { font-size: 20px; line-height: 1; }
+    .bnav-create-btn { width: 40px; height: 40px; background: var(--neon); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #000; }
+    /* PAGE */
+    .page { padding-top: var(--nav-h); padding-bottom: var(--bottom-nav); min-height: 100vh; }
+    @media(min-width:769px) { .page { padding-bottom: 0; } }
+    /* HERO */
+    .hero { min-height: calc(100vh - var(--nav-h)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,255,0,0.08) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 80% 60%, rgba(0,255,209,0.05) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 20% 70%, rgba(255,107,255,0.05) 0%, transparent 60%); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 100px; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 32px; letter-spacing: 0.05em; text-transform: uppercase; position: relative; z-index: 1; }
+    .hero-badge-dot { width: 6px; height: 6px; background: var(--neon); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    .hero h1 { font-size: clamp(48px, 10vw, 96px); font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; position: relative; z-index: 1; margin-bottom: 8px; }
+    .hero h1 em { font-style: normal; color: var(--neon); }
+    .hero-tagline { font-size: clamp(18px, 3vw, 24px); color: var(--text2); font-weight: 300; margin-bottom: 40px; position: relative; z-index: 1; letter-spacing: -0.01em; }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; margin-bottom: 64px; }
+    .btn-hero-primary { background: var(--neon); color: #000; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 14px; transition: all var(--transition); display: flex; align-items: center; gap: 8px; font-family: var(--font-head); cursor: pointer; }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,255,0,0.25); }
+    .btn-hero-secondary { background: var(--surface); color: var(--text); font-weight: 600; font-size: 16px; padding: 14px 28px; border-radius: 14px; border: 1px solid var(--border); transition: all var(--transition); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .btn-hero-secondary:hover { background: var(--surface2); transform: translateY(-2px); }
+    .hero-stats { display: flex; gap: 40px; position: relative; z-index: 1; flex-wrap: wrap; justify-content: center; }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--neon); }
+    .hero-stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+    /* MOCK MAP */
+    .mock-map { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; position: relative; height: 280px; margin: 0 auto 80px; max-width: 900px; }
+    .mock-map-bg { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, var(--border) 0px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, var(--border) 0px, transparent 1px, transparent 40px); }
+    .map-overlay-label { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px; font-size: 13px; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .map-event-pin { position: absolute; cursor: pointer; transition: transform 0.15s; transform: translate(-50%,-100%); }
+    .map-event-pin:hover { transform: translate(-50%,-110%) scale(1.05); z-index: 10; }
+    .map-event-pip { border-radius: 10px; padding: 6px 10px; font-size: 11px; font-weight: 700; color: #000; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); white-space: nowrap; font-family: var(--font-head); }
+    .user-pin { position: absolute; bottom: 45%; left: 52%; transform: translate(-50%,50%); }
+    .user-pin-dot { width: 16px; height: 16px; background: #3B82F6; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(59,130,246,0.2); animation: ping 2s ease-in-out infinite; }
+    @keyframes ping { 0%,100%{box-shadow:0 0 0 6px rgba(59,130,246,0.2)}50%{box-shadow:0 0 0 12px rgba(59,130,246,0.05)} }
+    .map-controls { position: absolute; bottom: 16px; right: 16px; display: flex; flex-direction: column; gap: 4px; }
+    .map-ctrl { width: 32px; height: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text2); cursor: pointer; }
+    /* SECTION */
+    .section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--neon); margin-bottom: 16px; }
+    .section-title { font-size: clamp(28px, 5vw, 44px); margin-bottom: 16px; }
+    /* CATS */
+    .cat-scroll { overflow-x: auto; display: flex; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-chip { display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 100px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text2); white-space: nowrap; transition: all var(--transition); flex-shrink: 0; cursor: pointer; }
+    .cat-chip:hover { border-color: var(--border2); color: var(--text); }
+    .cat-chip.active { background: var(--neon); color: #000; border-color: var(--neon); }
+    .cat-chip.create-chip { border: 1px dashed var(--border2); }
+    .cat-chip.create-chip:hover { border-color: var(--neon); color: var(--neon); }
+    /* CARDS */
+    .cards-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    @media(max-width:480px) { .cards-grid { grid-template-columns: 1fr; } }
+    .event-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all var(--transition); cursor: pointer; }
+    .event-card:hover { transform: translateY(-4px); border-color: var(--border2); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+    .card-image { height: 160px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .card-cat-icon { font-size: 48px; opacity: 0.3; position: relative; z-index: 1; }
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.7)); }
+    .card-top-badges { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; }
+    .card-cat-badge { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 8px; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(8px); letter-spacing: 0.03em; border: 1px solid rgba(255,255,255,0.15); }
+    .card-price-badge { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; color: #000; background: var(--neon); font-family: var(--font-head); }
+    .card-price-badge.free { background: var(--neon2); }
+    .card-body { padding: 16px; }
+    .card-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; line-height: 1.2; letter-spacing: -0.02em; }
+    .card-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .card-meta-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); }
+    .trust-score-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .trust-label { font-size: 11px; color: var(--text3); }
+    .trust-bar { flex: 1; height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+    .trust-fill { height: 100%; border-radius: 2px; background: var(--success); }
+    .trust-num { font-size: 11px; font-weight: 700; color: var(--success); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 10px; }
+    .card-host { display: flex; align-items: center; gap: 8px; }
+    .card-host-avatar { width: 24px; height: 24px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text2); }
+    .card-host-name { font-size: 12px; font-weight: 600; color: var(--text2); }
+    .verified-dot { width: 8px; height: 8px; background: #1D4ED8; border-radius: 50%; }
+    .card-actions { display: flex; gap: 6px; }
+    .card-action-btn { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--surface2); color: var(--text2); font-size: 14px; transition: all var(--transition); cursor: pointer; }
+    .card-action-btn:hover { background: var(--surface3); color: var(--text); }
+    .card-action-btn.active { background: rgba(200,255,0,0.15); color: var(--neon); }
+    .hp-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 8px 12px; margin-top: 10px; font-size: 11px; color: #F59E0B; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+    /* DISCOVER */
+    .discover-header { padding: 24px 24px 16px; }
+    .discover-title { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+    .discover-subtitle { font-size: 14px; color: var(--text2); }
+    .search-bar { display: flex; gap: 10px; padding: 0 24px; margin-bottom: 16px; }
+    .search-wrap { flex: 1; position: relative; display: flex; align-items: center; }
+    .search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px 12px 40px; color: var(--text); font-size: 14px; outline: none; transition: border-color var(--transition); }
+    .search-input:focus { border-color: var(--border2); }
+    .search-input::placeholder { color: var(--text3); }
+    .search-icon { position: absolute; left: 14px; font-size: 16px; color: var(--text3); pointer-events: none; }
+    .date-input { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-size: 14px; outline: none; min-width: 140px; font-family: var(--font-body); }
+    .filter-bar { display: flex; gap: 10px; padding: 0 24px; margin-bottom: 16px; flex-wrap: wrap; }
+    .sort-select { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; color: var(--text2); font-size: 13px; outline: none; font-family: var(--font-body); cursor: pointer; }
+    .view-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .view-btn { padding: 9px 16px; font-size: 13px; font-weight: 600; color: var(--text2); transition: all var(--transition); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .view-btn.active { background: var(--surface2); color: var(--text); }
+    .results-count { padding: 0 24px; margin-bottom: 16px; font-size: 13px; color: var(--text3); }
+    .cards-wrap { padding: 0 24px 24px; }
+    /* MAP VIEW */
+    .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 0 24px 24px; overflow: hidden; position: relative; height: 420px; }
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; animation: fadeIn 0.2s ease; }
+    @media(min-width:769px) { .modal-overlay { align-items: center; } }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 24px 24px 0 0; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+    @media(min-width:769px) { .modal { border-radius: 24px; } }
+    @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-handle { width: 40px; height: 4px; background: var(--border2); border-radius: 2px; margin: 12px auto; }
+    @media(min-width:769px) { .modal-handle { display: none; } }
+    .modal-image { height: 220px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .modal-img-icon { font-size: 80px; opacity: 0.2; }
+    .modal-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(17,17,17,0.9) 0%, transparent 60%); }
+    .modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; cursor: pointer; backdrop-filter: blur(8px); z-index: 10; }
+    .modal-body { padding: 20px; }
+    .modal-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.03em; }
+    .modal-badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+    .trust-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+    .modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    @media(max-width:480px) { .modal-info-grid { grid-template-columns: 1fr; } }
+    .modal-info-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .modal-info-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .modal-info-value { font-size: 14px; font-weight: 600; color: var(--text); }
+    .modal-desc { font-size: 15px; color: var(--text2); line-height: 1.65; margin: 16px 0; }
+    .modal-host { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .host-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--text2); font-family: var(--font-head); flex-shrink: 0; }
+    .safety-warning { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 14px; margin: 16px 0; font-size: 13px; color: #FCA5A5; line-height: 1.5; }
+    .hp-detail { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; padding: 14px; margin: 16px 0; font-size: 13px; color: #FCD34D; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-modal-primary { flex: 1; background: var(--neon); color: #000; font-weight: 700; font-size: 14px; padding: 14px 20px; border-radius: 12px; font-family: var(--font-head); transition: all var(--transition); text-align: center; min-width: 120px; cursor: pointer; }
+    .btn-modal-primary:hover { opacity: 0.85; }
+    .btn-modal-primary.rsvpd { background: var(--surface2); color: var(--neon); border: 1px solid var(--neon); }
+    .btn-modal-ghost { background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 14px; padding: 14px 20px; border-radius: 12px; border: 1px solid var(--border); transition: all var(--transition); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .btn-modal-ghost:hover { background: var(--surface3); color: var(--text); }
+    /* FORM */
+    .form-wrap { max-width: 680px; margin: 0 auto; padding: 24px; }
+    .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+    .form-section-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-row { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; outline: none; transition: border-color var(--transition); font-family: var(--font-body); }
+    .form-input:focus { border-color: var(--neon); }
+    .form-input::placeholder { color: var(--text3); }
+    .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; outline: none; resize: vertical; min-height: 90px; transition: border-color var(--transition); font-family: var(--font-body); }
+    .form-textarea:focus { border-color: var(--neon); }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:480px) { .form-grid-2 { grid-template-columns: 1fr; } }
+    .form-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 14px; outline: none; cursor: pointer; font-family: var(--font-body); }
+    .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .toggle-option { padding: 8px 16px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text2); transition: all var(--transition); cursor: pointer; }
+    .toggle-option.selected { background: var(--neon); color: #000; border-color: var(--neon); }
+    .privacy-option { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; cursor: pointer; transition: all var(--transition); background: var(--surface2); }
+    .privacy-option.selected { border-color: var(--neon); background: rgba(200,255,0,0.05); }
+    .privacy-opt-left { display: flex; align-items: center; gap: 10px; }
+    .privacy-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .privacy-radio-inner { width: 10px; height: 10px; background: var(--neon); border-radius: 50%; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all var(--transition); color: var(--text3); }
+    .upload-zone:hover { border-color: var(--neon); color: var(--neon); }
+    .submit-btn { width: 100%; background: var(--neon); color: #000; font-weight: 800; font-size: 16px; padding: 16px; border-radius: 14px; font-family: var(--font-head); transition: all var(--transition); margin-top: 8px; cursor: pointer; }
+    .submit-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    /* PROFILE */
+    .profile-header { padding: 32px 24px 20px; text-align: center; }
+    .profile-avatar { width: 80px; height: 80px; border-radius: 24px; margin: 0 auto 16px; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; font-family: var(--font-head); font-weight: 800; color: var(--neon); }
+    .profile-name { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+    .profile-handle { font-size: 14px; color: var(--text2); }
+    .profile-stats { display: flex; justify-content: center; gap: 32px; margin-top: 20px; }
+    .profile-stat { text-align: center; }
+    .profile-stat-num { font-size: 22px; font-weight: 800; font-family: var(--font-head); }
+    .profile-stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 24px; overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { padding: 14px 20px; font-size: 13px; font-weight: 700; color: var(--text3); border-bottom: 2px solid transparent; transition: all var(--transition); cursor: pointer; white-space: nowrap; }
+    .tab.active { color: var(--text); border-bottom-color: var(--neon); }
+    .tab-content { padding: 20px 24px; }
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--text3); }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-title { font-size: 18px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
+    .empty-sub { font-size: 14px; line-height: 1.5; }
+    /* TRUST */
+    .trust-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-top: 32px; }
+    .trust-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all var(--transition); }
+    .trust-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+    .badge-show { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 100px; font-size: 12px; font-weight: 700; color: #fff; margin: 4px; }
+    /* STATS */
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+    @media(min-width:600px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .stat-num { font-size: 28px; font-weight: 800; font-family: var(--font-head); }
+    .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+    .stat-change { font-size: 12px; color: var(--success); font-weight: 600; margin-top: 4px; }
+    /* AUTH */
+    .auth-modal { max-width: 420px; border-radius: 24px; padding: 32px; margin: auto; }
+    .auth-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; border: 1px solid var(--border); margin-bottom: 10px; transition: all var(--transition); background: var(--surface2); color: var(--text); cursor: pointer; }
+    .auth-btn:hover { background: var(--surface3); }
+    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .auth-divider-line { flex: 1; height: 1px; background: var(--border); }
+    /* TOAST */
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; z-index: 500; font-size: 14px; font-weight: 600; color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px; animation: toastIn 0.3s cubic-bezier(0.4,0,0.2,1); white-space: nowrap; }
+    @media(min-width:769px) { .toast { bottom: 24px; } }
+    @keyframes toastIn { from{transform:translateX(-50%) translateY(20px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
+    /* FEATURES */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 32px; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: all var(--transition); }
+    .feature-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+    .page-fade { animation: pageFade 0.2s ease; }
+    @keyframes pageFade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .padded { padding: 0 24px 24px; }
+    .boost-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .coming-soon { background: var(--surface3); border: 1px solid var(--border); font-size: 10px; font-weight: 700; color: var(--text3); padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.06em; margin-left: 6px; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th { text-align: left; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+    .admin-table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .status-pending { background: rgba(245,158,11,0.15); color: #F59E0B; }
+    .status-approved { background: rgba(34,197,94,0.15); color: #22C55E; }
+    .status-flagged { background: rgba(239,68,68,0.15); color: #EF4444; }
+    @media(max-width:480px) { .hero h1 { font-size: 42px; } }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+const MOTIVES = [
+  { id:1, title:"Lakota Saturdays", category:"Club Night", description:"Bristol's most iconic Saturday night. Expect deep house, techno, and jungle across 4 rooms. Resident DJs and special guests every week.", city:"Bristol", area:"Stokes Croft", date:"Sat 3 May", startTime:"22:00", endTime:"04:00", distance:"0.4 mi", entryType:"paid", price:"£8–£12", ageReq:"18+", host:"Lakota Bristol", hostVerified:true, venueVerified:true, trustScore:98, isHouseParty:false, color:"#7C3AED", badges:["Verified Venue","18+ Only","Community Rated"], saved:false, rsvp:false },
+  { id:2, title:"Bristol SU Big Night Out", category:"Student Event", description:"The University of Bristol Students' Union weekly big night out. Cheap drinks, good vibes, and everyone's invited. Student ID required.", city:"Bristol", area:"Clifton", date:"Fri 2 May", startTime:"21:00", endTime:"03:00", distance:"1.2 mi", entryType:"paid", price:"£4 NUS / £6 Guest", ageReq:"18+", host:"Bristol SU", hostVerified:true, venueVerified:true, trustScore:96, isHouseParty:false, color:"#0EA5E9", badges:["Verified Venue","Student Friendly","18+ Only"], saved:false, rsvp:false },
+  { id:3, title:"Poker Night @ The Crown", category:"Poker / Games Night", description:"Friendly poker tournament, no experience needed. Buy-in £10, winner takes £80 pot. Drinks deals all night. Limited seats.", city:"Bristol", area:"Bedminster", date:"Thu 1 May", startTime:"19:30", endTime:"23:30", distance:"1.8 mi", entryType:"paid", price:"£10 buy-in", ageReq:"18+", host:"Tom H.", hostVerified:false, venueVerified:false, trustScore:74, isHouseParty:false, color:"#10B981", badges:["Community Rated","18+ Only"], saved:false, rsvp:false },
+  { id:4, title:"Sunday Sesh – Cotham Park", category:"House Party", description:"Chill Sunday vibes. BYOB, outdoor garden, good music. Approx 20–30 people. Friends of friends welcome. DM for exact location.", city:"Bristol", area:"Cotham (approx)", date:"Sun 4 May", startTime:"15:00", endTime:"22:00", distance:"0.9 mi", entryType:"free", price:"Free (BYOB)", ageReq:"18+", host:"Jess & Maya", hostVerified:false, venueVerified:false, trustScore:68, isHouseParty:true, color:"#F59E0B", badges:["Safe Location Controls","Host Approved","18+ Only"], saved:false, rsvp:false },
+  { id:5, title:"Marble Factory Rave", category:"Rave", description:"Underground rave at Bristol's legendary Marble Factory. 3 rooms, 12 hours of music. Drum & bass, techno, grime. Strictly 18+.", city:"Bristol", area:"Avonmouth", date:"Sat 3 May", startTime:"21:00", endTime:"09:00", distance:"4.2 mi", entryType:"paid", price:"£15–£20", ageReq:"18+", host:"Marble Factory Events", hostVerified:true, venueVerified:true, trustScore:99, isHouseParty:false, color:"#EF4444", badges:["Verified Venue","Verified Host","18+ Only","Community Rated"], saved:false, rsvp:false },
+  { id:6, title:"Open Mic Night – The Lanes", category:"Live Music", description:"Every Thursday at The Lanes – Bristol's best open mic. Free entry, great craft beer, live original music from 8pm.", city:"Bristol", area:"City Centre", date:"Thu 1 May", startTime:"20:00", endTime:"23:00", distance:"0.7 mi", entryType:"free", price:"Free", ageReq:"18+", host:"The Lanes", hostVerified:true, venueVerified:true, trustScore:92, isHouseParty:false, color:"#8B5CF6", badges:["Verified Venue","Community Rated","18+ Only"], saved:false, rsvp:false },
+  { id:7, title:"Last Minute Drinks – Gloucester Rd", category:"Last Minute Plans", description:"Anyone free tonight? Meeting at The Annexe at 8pm, heading to Gravity or Motion later. All welcome. Just rock up.", city:"Bristol", area:"Gloucester Road", date:"Tonight", startTime:"20:00", endTime:"Late", distance:"0.3 mi", entryType:"free", price:"Free entry", ageReq:"18+", host:"Marcus B.", hostVerified:false, venueVerified:false, trustScore:61, isHouseParty:false, color:"#06B6D4", badges:["Community Rated","18+ Only"], saved:false, rsvp:false },
+  { id:8, title:"UWE Freshers' Pre-Drinks", category:"Student Event", description:"Pre-drinks at Frenchay campus before heading to Motion. £3 shots, beer pong, good music. UWE students only.", city:"Bristol", area:"Frenchay", date:"Fri 2 May", startTime:"19:00", endTime:"22:00", distance:"3.1 mi", entryType:"free", price:"Cheap bar", ageReq:"18+", host:"UWE Students Union", hostVerified:true, venueVerified:true, trustScore:88, isHouseParty:false, color:"#0EA5E9", badges:["Verified Venue","Student Friendly","18+ Only"], saved:false, rsvp:false },
+];
+
+const CATS = [
+  {id:"all",label:"All Motives",icon:"✦"},{id:"Pub / Bar",label:"Pub / Bar",icon:"🍺"},
+  {id:"Club Night",label:"Club Night",icon:"🎧"},{id:"Rave",label:"Rave",icon:"⚡"},
+  {id:"House Party",label:"House Party",icon:"🏠"},{id:"Student Event",label:"Student",icon:"🎓"},
+  {id:"Poker / Games Night",label:"Poker / Games",icon:"♠️"},{id:"Live Music",label:"Live Music",icon:"🎸"},
+  {id:"Free Motives",label:"Free Only",icon:"🆓"},{id:"Last Minute Plans",label:"Last Minute",icon:"⏰"},
+  {id:"create",label:"Upload Yours",icon:"＋"},
+];
+
+const BADGE_STYLES = {
+  "Verified Venue":{bg:"#1D4ED8",icon:"🏛"},"Verified Host":{bg:"#7C3AED",icon:"✓"},
+  "Student Friendly":{bg:"#0891B2",icon:"🎓"},"18+ Only":{bg:"#374151",icon:"18"},
+  "Community Rated":{bg:"#059669",icon:"★"},"Safe Location Controls":{bg:"#B45309",icon:"🔒"},
+  "Host Approved":{bg:"#9333EA",icon:"✓"},
+};
+
+const getCatIcon = (cat) => CATS.find(c=>c.id===cat)?.icon || "✦";
+
+function TrustBadge({label}) {
+  const s = BADGE_STYLES[label]||{bg:"#374151",icon:"✓"};
+  return <span className="trust-badge" style={{background:s.bg}}><span style={{fontSize:10}}>{s.icon}</span> {label}</span>;
+}
+
+function EventCard({m, onClick, onSave, onRSVP}) {
+  return (
+    <div className="event-card" onClick={()=>onClick(m)}>
+      <div className="card-image" style={{background:`linear-gradient(135deg,${m.color}33,${m.color}0a)`}}>
+        <div className="card-cat-icon" style={{position:"relative",zIndex:1}}>{getCatIcon(m.category)}</div>
+        <div className="card-overlay"/>
+        <div className="card-top-badges">
+          <span className="card-cat-badge">{m.category}</span>
+          <span className={`card-price-badge${m.entryType==="free"?" free":""}`}>{m.entryType==="free"?"FREE":m.price}</span>
+        </div>
+      </div>
+      <div className="card-body">
+        <div className="card-title">{m.title}</div>
+        <div className="card-meta">
+          <span className="card-meta-item">📅 {m.date}</span>
+          <span className="card-meta-item">🕐 {m.startTime}</span>
+          <span className="card-meta-item">📍 {m.distance}</span>
+        </div>
+        <div className="trust-score-bar">
+          <span className="trust-label">Trust</span>
+          <div className="trust-bar"><div className="trust-fill" style={{width:`${m.trustScore}%`}}/></div>
+          <span className="trust-num">{m.trustScore}</span>
+        </div>
+        {m.isHouseParty && <div className="hp-warning">🔒 House Party — location hidden until approved</div>}
+        <div className="card-footer">
+          <div className="card-host">
+            <div className="card-host-avatar">{m.host[0]}</div>
+            <span className="card-host-name">{m.host}</span>
+            {m.hostVerified && <div className="verified-dot"/>}
+          </div>
+          <div className="card-actions" onClick={e=>e.stopPropagation()}>
+            <button className={`card-action-btn${m.saved?" active":""}`} onClick={()=>onSave(m.id)}>🔖</button>
+            <button className={`card-action-btn${m.rsvp?" active":""}`} onClick={()=>onRSVP(m.id)}>✦</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EventModal({m, onClose, onSave, onRSVP, showToast}) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-handle"/>
+        <div style={{position:"relative"}}>
+          <div className="modal-image" style={{background:`linear-gradient(135deg,${m.color}44,${m.color}11)`}}>
+            <div className="modal-img-icon">{getCatIcon(m.category)}</div>
+            <div className="modal-img-overlay"/>
+          </div>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <div className="modal-title">{m.title}</div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:4}}>
+            <span style={{fontSize:13,color:"var(--text2)"}}>by {m.host}</span>
+            {m.hostVerified && <span style={{fontSize:11,background:"#1D4ED8",color:"#fff",padding:"2px 8px",borderRadius:6,fontWeight:700}}>✓ Verified</span>}
+          </div>
+          <div className="modal-badges">{m.badges.map(b=><TrustBadge key={b} label={b}/>)}</div>
+          <div className="modal-info-grid">
+            <div className="modal-info-item"><div className="modal-info-label">Date</div><div className="modal-info-value">{m.date}</div></div>
+            <div className="modal-info-item"><div className="modal-info-label">Time</div><div className="modal-info-value">{m.startTime} – {m.endTime}</div></div>
+            <div className="modal-info-item"><div className="modal-info-label">Location</div><div className="modal-info-value">{m.isHouseParty?`${m.area} 🔒`:m.area}</div></div>
+            <div className="modal-info-item"><div className="modal-info-label">Distance</div><div className="modal-info-value">{m.distance}</div></div>
+            <div className="modal-info-item"><div className="modal-info-label">Entry</div><div className="modal-info-value" style={{color:m.entryType==="free"?"var(--neon2)":"var(--text)"}}>{m.entryType==="free"?"Free":m.price}</div></div>
+            <div className="modal-info-item"><div className="modal-info-label">Age</div><div className="modal-info-value">{m.ageReq}</div></div>
+          </div>
+          <p className="modal-desc">{m.description}</p>
+          <div className="modal-host">
+            <div className="host-avatar">{m.host[0]}</div>
+            <div><div style={{fontSize:15,fontWeight:700}}>{m.host}</div><div style={{fontSize:12,color:"var(--text2)"}}>{m.venueVerified?"Verified Venue":m.hostVerified?"Verified Host":"Community Host"}</div></div>
+          </div>
+          {m.isHouseParty && <div className="hp-detail">🔒 <strong>House Party Privacy Active</strong><br/>Exact address hidden. Contact the host directly to receive location details.</div>}
+          <div className="safety-warning"><strong>⚠️ Safety Reminder</strong><br/>Always check official event details before attending. Report anything suspicious.</div>
+          <div className="modal-actions">
+            <button className={`btn-modal-primary${m.rsvp?" rsvpd":""}`} onClick={()=>{onRSVP(m.id);showToast(m.rsvp?"Removed from interested":"✦ Marked as interested!");}}>
+              {m.rsvp?"✦ Interested":"I'm Interested"}
+            </button>
+            <button className="btn-modal-ghost" onClick={()=>{onSave(m.id);showToast(m.saved?"Removed from saved":"🔖 Motive saved!");}}>🔖 Save</button>
+            <button className="btn-modal-ghost" onClick={()=>showToast("🔗 Link copied!")}>Share</button>
+            <button className="btn-modal-ghost" onClick={()=>showToast("⚑ Report submitted")}>Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MapView({motives, onPinClick}) {
+  const positions = [
+    {top:"28%",left:"50%"},{top:"48%",left:"30%"},{top:"20%",left:"68%"},
+    {top:"62%",left:"58%"},{top:"38%",left:"74%"},{top:"68%",left:"24%"},
+    {top:"22%",left:"38%"},{top:"54%",left:"44%"},
+  ];
+  return (
+    <div className="map-container">
+      <div style={{position:"absolute",inset:0,background:"repeating-linear-gradient(0deg,var(--border) 0,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,var(--border) 0,transparent 1px,transparent 40px)"}}/>
+      <div className="map-overlay-label">
+        <span style={{width:8,height:8,background:"var(--neon)",borderRadius:"50%",display:"inline-block",animation:"pulse 2s infinite"}}/>
+        Bristol City Centre · Live Map (Mapbox ready)
+      </div>
+      <div className="user-pin"><div className="user-pin-dot"/></div>
+      {motives.slice(0,8).map((m,i)=>(
+        <div key={m.id} className="map-event-pin" style={{top:positions[i]?.top,left:positions[i]?.left}} onClick={()=>onPinClick(m)}>
+          <div className="map-event-pip" style={{background:m.color}}>{getCatIcon(m.category)} {m.title.split(" ").slice(0,2).join(" ")}</div>
+        </div>
+      ))}
+      <div className="map-controls">
+        <div className="map-ctrl">＋</div>
+        <div className="map-ctrl">－</div>
+        <div className="map-ctrl">◎</div>
+      </div>
+    </div>
+  );
+}
+
+function AuthModal({onClose, showToast}) {
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal auth-modal" onClick={e=>e.stopPropagation()}>
+        <div style={{textAlign:"center",marginBottom:24}}>
+          <div style={{fontSize:32,marginBottom:12}}>✦</div>
+          <div style={{fontSize:28,fontWeight:800,fontFamily:"var(--font-head)",letterSpacing:"-0.03em",marginBottom:6}}>Join Find My Motive</div>
+          <div style={{fontSize:14,color:"var(--text2)"}}>Sign up free to save motives, create events, and RSVP.</div>
+        </div>
+        <button className="auth-btn" onClick={()=>{onClose();showToast("Google sign-in coming soon");}}>G &nbsp; Continue with Google</button>
+        <button className="auth-btn" onClick={()=>{onClose();showToast("Apple sign-in coming soon");}}>🍎 &nbsp; Continue with Apple</button>
+        <div className="auth-divider"><div className="auth-divider-line"/><span style={{fontSize:12,color:"var(--text3)"}}>or</span><div className="auth-divider-line"/></div>
+        <div className="form-row"><input className="form-input" placeholder="Email address" type="email"/></div>
+        <div className="form-row"><input className="form-input" placeholder="Password" type="password"/></div>
+        <button className="btn-primary" style={{width:"100%",padding:"14px",fontSize:15,borderRadius:12,marginTop:4}} onClick={()=>{onClose();showToast("✦ Welcome to Find My Motive!");}}>Create Account</button>
+        <p style={{fontSize:11,color:"var(--text3)",textAlign:"center",marginTop:16,lineHeight:1.5}}>By signing up you agree to our Terms of Use and Privacy Policy. You must be 18+ to join.</p>
+      </div>
+    </div>
+  );
+}
+
+// ── PAGES ──
+function Landing({setPage}) {
+  return (
+    <div className="page page-fade">
+      <div className="hero">
+        <div className="hero-bg"/>
+        <div className="hero-badge"><div className="hero-badge-dot"/>UK-Wide Nightlife Discovery</div>
+        <h1>Find your<br/>nearest <em>motive.</em></h1>
+        <p className="hero-tagline">No plans? Find one. Or create your own.</p>
+        <div className="hero-ctas">
+          <button className="btn-hero-primary" onClick={()=>setPage("discover")}>📍 Find motives near me</button>
+          <button className="btn-hero-secondary" onClick={()=>setPage("create")}>＋ Create a motive</button>
+        </div>
+        <div className="hero-stats">
+          {[{n:"1,240+",l:"Active Motives"},{n:"28",l:"UK Cities"},{n:"18+",l:"Only"},{n:"Free",l:"To Browse"}].map(s=>(
+            <div key={s.l} className="hero-stat"><div className="hero-stat-num">{s.n}</div><div className="hero-stat-label">{s.l}</div></div>
+          ))}
+        </div>
+      </div>
+      <div style={{padding:"0 24px",maxWidth:900,margin:"0 auto"}}>
+        <div className="mock-map">
+          <div style={{position:"absolute",inset:0,background:"repeating-linear-gradient(0deg,var(--border) 0,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,var(--border) 0,transparent 1px,transparent 40px)"}}/>
+          <div className="map-overlay-label" style={{top:16}}><span style={{width:8,height:8,background:"var(--neon)",borderRadius:"50%",display:"inline-block"}}/>Bristol · Interactive Map Coming Soon</div>
+          {[{t:"28%",l:"50%",c:"#7C3AED",txt:"Lakota"},{t:"50%",l:"30%",c:"#0EA5E9",txt:"Bristol SU"},{t:"20%",l:"68%",c:"#EF4444",txt:"Rave"},{t:"65%",l:"60%",c:"#F59E0B",txt:"House Party"},{t:"40%",l:"75%",c:"#10B981",txt:"Poker"},{t:"70%",l:"25%",c:"#8B5CF6",txt:"Live Music"}].map((p,i)=>(
+            <div key={i} style={{position:"absolute",top:p.t,left:p.l,transform:"translate(-50%,-100%)",cursor:"pointer"}}>
+              <div style={{background:p.c,borderRadius:10,padding:"5px 10px",fontSize:11,fontWeight:700,color:"#000",fontFamily:"var(--font-head)",boxShadow:"0 4px 12px rgba(0,0,0,0.4)"}}>{p.txt}</div>
+            </div>
+          ))}
+          <div className="user-pin"><div className="user-pin-dot"/></div>
+        </div>
+      </div>
+      <div className="section">
+        <div className="section-label">Browse by vibe</div>
+        <h2 className="section-title">What are you after tonight?</h2>
+        <div className="cat-scroll" style={{marginTop:24}}>
+          {CATS.map(c=>(
+            <button key={c.id} className={`cat-chip${c.id==="create"?" create-chip":""}`} onClick={()=>setPage(c.id==="create"?"create":"discover")}>{c.icon} {c.label}</button>
+          ))}
+        </div>
+      </div>
+      <div className="section" style={{paddingTop:0}}>
+        <div className="section-label">The platform</div>
+        <h2 className="section-title">Everything in one place.</h2>
+        <div className="features-grid">
+          {[{i:"🗺",t:"Live Map View",d:"See every motive near you on an interactive map. Filter by distance, category, or time."},{i:"✦",t:"Create Any Motive",d:"From club nights to house parties to poker nights — post anything with privacy controls."},{i:"🔒",t:"House Party Safety",d:"Exact addresses hidden by default. Host approval controls who gets location details."},{i:"🎓",t:"Student Friendly",d:"Built for UK students. University events, society nights, cheap entry — all in one place."},{i:"⚡",t:"Last Minute Plans",d:"Something happening in the next 2 hours? Last Minute Plans surface the spontaneous stuff."},{i:"🏛",t:"Verified Venues",d:"Official clubs, venues, and promoters get a verified badge so you know what's legit."}].map(f=>(
+            <div key={f.t} className="feature-card"><div style={{fontSize:28,marginBottom:12}}>{f.i}</div><div style={{fontSize:17,fontWeight:700,marginBottom:8}}>{f.t}</div><div style={{fontSize:14,color:"var(--text2)",lineHeight:1.6}}>{f.d}</div></div>
+          ))}
+        </div>
+      </div>
+      <div className="section" style={{paddingTop:0}}>
+        <div className="section-label">The founders</div>
+        <h2 className="section-title">Built by people who actually go out.</h2>
+        <div style={{display:"grid",gap:12,gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",marginTop:24}}>
+          {[{i:"OB",n:"Oliver Branson-Hammond"},{i:"DM",n:"Dominic McCarthy"}].map(f=>(
+            <div key={f.n} style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:24,display:"flex",alignItems:"center",gap:16}}>
+              <div style={{width:56,height:56,borderRadius:16,background:"var(--surface2)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"var(--font-head)",fontSize:20,fontWeight:800,color:"var(--neon)",flexShrink:0}}>{f.i}</div>
+              <div><div style={{fontSize:17,fontWeight:700}}>{f.n}</div><div style={{fontSize:13,color:"var(--text2)"}}>Co-Founder · Find My Motive</div></div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{background:"var(--surface)",borderTop:"1px solid var(--border)",padding:"60px 24px",textAlign:"center"}}>
+        <h2 style={{fontSize:"clamp(28px,6vw,48px)",marginBottom:16,letterSpacing:"-0.03em"}}>Ready to find your <span style={{color:"var(--neon)"}}>motive?</span></h2>
+        <p style={{color:"var(--text2)",marginBottom:32,fontSize:16}}>Free to browse. Free to create. UK-wide.</p>
+        <button className="btn-hero-primary" onClick={()=>setPage("discover")}>Explore motives near me →</button>
+        <div style={{marginTop:48,fontSize:12,color:"var(--text3)"}}>© 2025 Find My Motive · 18+ Platform · Built by Oliver Branson-Hammond & Dominic McCarthy</div>
+      </div>
+    </div>
+  );
+}
+
+function Discover({motives, setMotives, onCardClick, showToast, defaultView="feed"}) {
+  const [search, setSearch] = useState("Bristol");
+  const [cat, setCat] = useState("all");
+  const [view, setView] = useState(defaultView);
+  const [pinMotive, setPinMotive] = useState(null);
+
+  const filtered = motives.filter(m => {
+    if(cat==="all") return true;
+    if(cat==="Free Motives") return m.entryType==="free";
+    return m.category===cat;
+  });
+
+  const save = id => { setMotives(ms=>ms.map(m=>m.id===id?{...m,saved:!m.saved}:m)); const m=motives.find(x=>x.id===id); showToast(m?.saved?"Removed from saved":"🔖 Motive saved!"); };
+  const rsvp = id => setMotives(ms=>ms.map(m=>m.id===id?{...m,rsvp:!m.rsvp}:m));
+
+  return (
+    <div className="page page-fade">
+      <div className="discover-header">
+        <div className="discover-title">Discover Motives</div>
+        <div className="discover-subtitle">Find what's happening near you tonight</div>
+      </div>
+      <div className="search-bar">
+        <div className="search-wrap"><span className="search-icon">📍</span><input className="search-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Enter city or postcode…"/></div>
+        <input className="date-input" type="date" defaultValue="2025-05-03"/>
+      </div>
+      <div className="filter-bar">
+        <div className="view-toggle">
+          <button className={`view-btn${view==="feed"?" active":""}`} onClick={()=>setView("feed")}>📋 Feed</button>
+          <button className={`view-btn${view==="map"?" active":""}`} onClick={()=>setView("map")}>🗺 Map</button>
+        </div>
+        <select className="sort-select"><option>Distance</option><option>Time</option><option>Trending</option><option>Free first</option></select>
+      </div>
+      <div style={{padding:"0 24px 12px",overflowX:"auto"}}>
+        <div className="cat-scroll">
+          {CATS.filter(c=>c.id!=="create").map(c=>(
+            <button key={c.id} className={`cat-chip${cat===c.id?" active":""}`} onClick={()=>setCat(c.id)}>{c.icon} {c.label}</button>
+          ))}
+        </div>
+      </div>
+      {view==="map" ? (
+        <>
+          <MapView motives={filtered} onPinClick={m=>{setPinMotive(m);}}/>
+          {pinMotive && <EventModal m={pinMotive} onClose={()=>setPinMotive(null)} onSave={save} onRSVP={rsvp} showToast={showToast}/>}
+          <div className="results-count">{filtered.length} motives on map</div>
+          <div className="cards-wrap"><div className="cards-grid">{filtered.map(m=><EventCard key={m.id} m={m} onClick={onCardClick} onSave={save} onRSVP={rsvp}/>)}</div></div>
+        </>
+      ) : (
+        <>
+          <div className="results-count">{filtered.length} motives near {search}</div>
+          <div className="cards-wrap">
+            {filtered.length===0 ? (
+              <div className="empty-state"><div className="empty-icon">🔍</div><div className="empty-title">No motives found</div><div className="empty-sub">Try a different category!</div></div>
+            ) : (
+              <div className="cards-grid">{filtered.map(m=><EventCard key={m.id} m={m} onClick={onCardClick} onSave={save} onRSVP={rsvp}/>)}</div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Create({showToast, setPage}) {
+  const [vis, setVis] = useState("public");
+  const [entry, setEntry] = useState("free");
+  const [cat, setCat] = useState("");
+  const [done, setDone] = useState(false);
+
+  if(done) return (
+    <div className="page page-fade" style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"80vh"}}>
+      <div style={{textAlign:"center",padding:40}}>
+        <div style={{fontSize:64,marginBottom:16}}>✦</div>
+        <h2 style={{fontSize:28,marginBottom:8}}>Motive Created!</h2>
+        <p style={{color:"var(--text2)",marginBottom:32}}>Your motive is under review and will go live shortly.</p>
+        <button className="btn-primary" onClick={()=>{setDone(false);setPage("discover");}}>Browse Motives →</button>
+      </div>
+    </div>
+  );
+
+  const visOpts = [{id:"public",icon:"🌍",t:"Public",d:"Anyone can find and see this"},{id:"friends",icon:"👥",t:"Friends Only",d:"Only your followers"},{id:"invite",icon:"🔗",t:"Invite Link Only",d:"Share link to give access"},{id:"private",icon:"🔒",t:"Private",d:"Only you can see it"}];
+
+  return (
+    <div className="page page-fade">
+      <div className="discover-header"><div className="discover-title">Create a Motive</div><div className="discover-subtitle">Share your event with the community</div></div>
+      <div className="form-wrap">
+        <div className="form-section">
+          <div className="form-section-title">✦ Basic Info</div>
+          <div className="form-row"><label className="form-label">Motive Title *</label><input className="form-input" placeholder="e.g. Saturday Night at Motion…"/></div>
+          <div className="form-row"><label className="form-label">Category *</label>
+            <select className="form-select" value={cat} onChange={e=>setCat(e.target.value)}>
+              <option value="">Select a category</option>
+              {CATS.filter(c=>c.id!=="all"&&c.id!=="create"&&c.id!=="Free Motives"&&c.id!=="Last Minute Plans").map(c=><option key={c.id} value={c.id}>{c.icon} {c.label}</option>)}
+            </select>
+          </div>
+          <div className="form-row"><label className="form-label">Description</label><textarea className="form-textarea" placeholder="Tell people what to expect…"/></div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">📍 Location</div>
+          <div className="form-row"><label className="form-label">City / Area *</label><input className="form-input" placeholder="e.g. Bristol, Manchester…"/></div>
+          <div className="form-row"><label className="form-label">Approximate Area (shown publicly)</label><input className="form-input" placeholder="e.g. Stokes Croft, City Centre…"/></div>
+          <div className="form-row"><label className="form-label">Exact Address {cat==="House Party"?"(hidden from public)":""}</label><input className="form-input" placeholder={cat==="House Party"?"Shared only with approved guests":"Full address or venue name"}/></div>
+          {cat==="House Party" && <div className="hp-warning">🔒 House Party mode — exact address hidden from public.</div>}
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">🕐 Date & Time</div>
+          <div className="form-grid-2">
+            <div className="form-row" style={{marginBottom:0}}><label className="form-label">Date *</label><input className="form-input" type="date"/></div>
+            <div className="form-row" style={{marginBottom:0}}><label className="form-label">Age Req.</label><select className="form-select"><option>18+ Only</option><option>21+</option></select></div>
+            <div className="form-row" style={{marginBottom:0}}><label className="form-label">Start Time *</label><input className="form-input" type="time" defaultValue="21:00"/></div>
+            <div className="form-row" style={{marginBottom:0}}><label className="form-label">End Time</label><input className="form-input" type="time" defaultValue="03:00"/></div>
+          </div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">🎟 Entry</div>
+          <div className="form-row"><label className="form-label">Entry Type *</label>
+            <div className="toggle-group">
+              {["free","paid","invite-only"].map(t=>(
+                <button key={t} className={`toggle-option${entry===t?" selected":""}`} onClick={()=>setEntry(t)}>{t==="free"?"🆓 Free":t==="paid"?"💳 Paid":"✉️ Invite Only"}</button>
+              ))}
+            </div>
+          </div>
+          {entry==="paid" && <div className="form-row"><label className="form-label">Price / Ticket Link</label><input className="form-input" placeholder="e.g. £10, or paste ticket link…"/></div>}
+          <div className="form-row"><label className="form-label">Capacity Limit</label><input className="form-input" type="number" placeholder="Leave blank if unlimited"/></div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">👁 Visibility</div>
+          {visOpts.map(o=>(
+            <div key={o.id} className={`privacy-option${vis===o.id?" selected":""}`} onClick={()=>setVis(o.id)}>
+              <div className="privacy-opt-left"><span style={{fontSize:20}}>{o.icon}</span><div><div style={{fontSize:14,fontWeight:700}}>{o.t}</div><div style={{fontSize:12,color:"var(--text2)"}}>{o.d}</div></div></div>
+              <div className="privacy-radio">{vis===o.id&&<div className="privacy-radio-inner"/>}</div>
+            </div>
+          ))}
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">👤 Host Info</div>
+          <div className="form-row"><label className="form-label">Host Name *</label><input className="form-input" placeholder="Your name or organisation"/></div>
+          <div className="form-row"><label className="form-label">Contact / Social Link</label><input className="form-input" placeholder="Instagram, WhatsApp, or email…"/></div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">🖼 Poster / Image</div>
+          <div className="upload-zone"><div style={{fontSize:32,marginBottom:8}}>📷</div><div style={{fontWeight:600}}>Upload poster or photo</div><div style={{fontSize:11,marginTop:4}}>PNG, JPG up to 10MB</div></div>
+        </div>
+        <div className="form-section">
+          <div className="form-section-title">⚠️ Safety Notes</div>
+          <textarea className="form-textarea" placeholder="e.g. Bring ID, no re-entry, dress code…"/>
+          <div style={{background:"rgba(239,68,68,0.08)",border:"1px solid rgba(239,68,68,0.2)",borderRadius:10,padding:12,fontSize:12,color:"#FCA5A5",lineHeight:1.5,marginTop:12}}>By submitting, you confirm this motive is 18+ and does not promote illegal activity.</div>
+        </div>
+        <button className="submit-btn" onClick={()=>{showToast("✦ Motive submitted for review!");setDone(true);}}>Submit Motive →</button>
+      </div>
+    </div>
+  );
+}
+
+function Saved({motives, setMotives, onCardClick, showToast}) {
+  const [tab, setTab] = useState("saved");
+  const savedList = motives.filter(m=>m.saved);
+  const rsvpList = motives.filter(m=>m.rsvp);
+  const save = id => setMotives(ms=>ms.map(m=>m.id===id?{...m,saved:!m.saved}:m));
+  const rsvp = id => setMotives(ms=>ms.map(m=>m.id===id?{...m,rsvp:!m.rsvp}:m));
+  const list = tab==="saved"?savedList:rsvpList;
+  return (
+    <div className="page page-fade">
+      <div className="discover-header"><div className="discover-title">Your Motives</div></div>
+      <div className="tabs">
+        <div className={`tab${tab==="saved"?" active":""}`} onClick={()=>setTab("saved")}>Saved ({savedList.length})</div>
+        <div className={`tab${tab==="rsvp"?" active":""}`} onClick={()=>setTab("rsvp")}>Interested ({rsvpList.length})</div>
+      </div>
+      <div className="tab-content">
+        {list.length===0?(
+          <div className="empty-state"><div className="empty-icon">{tab==="saved"?"🔖":"✦"}</div><div className="empty-title">Nothing here yet</div><div className="empty-sub">Browse motives and save the ones you want.</div></div>
+        ):(
+          <div className="cards-grid">{list.map(m=><EventCard key={m.id} m={m} onClick={onCardClick} onSave={save} onRSVP={rsvp}/>)}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Profile({setPage, showToast, motives}) {
+  const [tab, setTab] = useState("created");
+  return (
+    <div className="page page-fade">
+      <div className="profile-header">
+        <div className="profile-avatar">OB</div>
+        <div className="profile-name">Oliver B.</div>
+        <div className="profile-handle">@oliverbh · Bristol</div>
+        <div style={{marginTop:12}}><span className="trust-badge" style={{background:"#374151"}}>18+ Verified</span></div>
+        <div className="profile-stats">
+          <div className="profile-stat"><div className="profile-stat-num">3</div><div className="profile-stat-label">Created</div></div>
+          <div className="profile-stat"><div className="profile-stat-num">{motives.filter(m=>m.saved).length}</div><div className="profile-stat-label">Saved</div></div>
+          <div className="profile-stat"><div className="profile-stat-num">{motives.filter(m=>m.rsvp).length}</div><div className="profile-stat-label">Interested</div></div>
+        </div>
+      </div>
+      <div className="tabs">
+        <div className={`tab${tab==="created"?" active":""}`} onClick={()=>setTab("created")}>Created</div>
+        <div className={`tab${tab==="settings"?" active":""}`} onClick={()=>setTab("settings")}>Settings</div>
+        <div className={`tab${tab==="verify"?" active":""}`} onClick={()=>setTab("verify")}>Verification</div>
+      </div>
+      <div className="tab-content">
+        {tab==="created" && <div className="empty-state"><div className="empty-icon">✦</div><div className="empty-title">No motives created yet</div><div className="empty-sub">Share your first event.</div><button className="btn-primary" style={{marginTop:20}} onClick={()=>setPage("create")}>Create a Motive</button></div>}
+        {tab==="settings" && <div>{["Display Name","Email","City","Date of Birth"].map(f=><div key={f} className="form-row"><label className="form-label">{f}</label><input className="form-input" placeholder={f==="City"?"Bristol":`Your ${f.toLowerCase()}`}/></div>)}<div style={{display:"flex",gap:10,marginTop:16}}><button className="btn-ghost" onClick={()=>showToast("Settings saved")}>Save</button><button className="btn-ghost" style={{color:"var(--danger)"}} onClick={()=>showToast("Logged out")}>Sign Out</button></div></div>}
+        {tab==="verify" && <div><p style={{fontSize:14,color:"var(--text2)",lineHeight:1.6,padding:"16px 0"}}>Get verified to show your events are trustworthy. Available for venues, promoters, and student societies.</p><div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"16px 0"}}>{Object.entries(BADGE_STYLES).slice(0,4).map(([l,s])=><span key={l} className="badge-show" style={{background:s.bg}}>{s.icon} {l}</span>)}</div><button className="btn-primary" onClick={()=>showToast("Verification request sent!")}>Apply for Verification</button></div>}
+      </div>
+    </div>
+  );
+}
+
+function HostDash({showToast, setPage}) {
+  return (
+    <div className="page page-fade">
+      <div className="discover-header"><div className="discover-title">Host Dashboard</div><div className="discover-subtitle">Manage your motives and track performance</div></div>
+      <div className="padded">
+        <div className="stat-grid">
+          {[{n:"3",l:"Live Motives",c:"+1 this week"},{n:"284",l:"Total Views",c:"+47 today"},{n:"62",l:"Saves",c:"+12 this week"},{n:"31",l:"Interested",c:"+8 today"}].map(s=>(
+            <div key={s.l} className="stat-card"><div className="stat-num">{s.n}</div><div className="stat-label">{s.l}</div><div className="stat-change">{s.c}</div></div>
+          ))}
+        </div>
+        <div className="boost-card"><div><div style={{fontSize:16,fontWeight:700,marginBottom:4}}>🚀 Boost Your Motive <span className="coming-soon">Coming Soon</span></div><div style={{fontSize:13,color:"var(--text2)"}}>Feature your event at the top of search results.</div></div><button style={{background:"var(--surface3)",color:"var(--text2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 18px",fontSize:13,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>showToast("Boost coming soon!")}>Boost →</button></div>
+        <div className="boost-card"><div><div style={{fontSize:16,fontWeight:700,marginBottom:4}}>📊 Advanced Analytics <span className="coming-soon">Coming Soon</span></div><div style={{fontSize:13,color:"var(--text2)"}}>Track RSVPs, saves, and audience data.</div></div><button style={{background:"var(--surface3)",color:"var(--text2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 18px",fontSize:13,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}} onClick={()=>showToast("Analytics in Phase 5!")}>View →</button></div>
+        <div style={{marginTop:24}}><div style={{fontSize:14,fontWeight:700,marginBottom:12}}>Your Active Motives</div><div className="empty-state" style={{padding:"32px 0"}}><div className="empty-icon">✦</div><div className="empty-title">No motives yet</div><button className="btn-primary" style={{marginTop:16}} onClick={()=>setPage("create")}>Create Motive →</button></div></div>
+      </div>
+    </div>
+  );
+}
+
+function Trust() {
+  return (
+    <div className="page page-fade">
+      <div className="discover-header"><div className="discover-title">Trust & Safety</div><div className="discover-subtitle">Find My Motive is built with safety at its core</div></div>
+      <div className="padded">
+        <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--radius)",padding:20,marginBottom:24,fontSize:14,color:"var(--text2)",lineHeight:1.7}}>Find My Motive is an 18+ platform. We take safety seriously — from house party privacy controls to verified venue badges and community reporting.</div>
+        <div style={{marginBottom:8,fontSize:11,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--neon)"}}>Trust Badges</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:32}}>{Object.entries(BADGE_STYLES).map(([l,s])=><span key={l} className="badge-show" style={{background:s.bg}}>{s.icon} {l}</span>)}</div>
+        <div className="trust-grid">
+          {[{i:"🔒",t:"House Party Privacy",d:"Exact addresses hidden by default. Only shown to host-approved guests."},{i:"🏛",t:"Verified Venues",d:"Official clubs and promoters apply for verification badges."},{i:"⭐",t:"Community Ratings",d:"Events get a trust score based on host history and community feedback."},{i:"🚨",t:"Report System",d:"Anyone can report suspicious motives. Reviewed within 2 hours."},{i:"🤖",t:"AI Moderation (Soon)",d:"Automated scanning will flag suspicious listings before they go live."},{i:"🎓",t:"18+ Platform",d:"All events default to 18+. We do not allow under-18 content."},{i:"📋",t:"Clear Terms",d:"No illegal activity. Violations result in immediate removal and ban."},{i:"🔐",t:"GDPR Compliant",d:"UK users protected under GDPR. We never sell your data."}].map(c=>(
+            <div key={c.t} className="trust-card"><div style={{fontSize:28,marginBottom:12}}>{c.i}</div><div style={{fontSize:16,fontWeight:700,marginBottom:6}}>{c.t}</div><div style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{c.d}</div></div>
+          ))}
+        </div>
+        <div style={{marginTop:32,background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.15)",borderRadius:14,padding:20}}>
+          <div style={{fontWeight:700,marginBottom:8,color:"#EF4444"}}>⚠️ Disclaimer</div>
+          <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.7}}>Find My Motive aggregates user-generated event information. We are not responsible for accuracy of third-party listings. Always check official event pages before attending. For private events, always verify the host's identity independently.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Admin() {
+  const reported = [{id:1,title:"Warehouse Rave",reporter:"user_882",reason:"Suspicious address",status:"pending"},{id:2,title:"VIP After Party",reporter:"user_441",reason:"No age verification",status:"flagged"},{id:3,title:"Garden Kickback",reporter:"user_215",reason:"Capacity too high",status:"approved"}];
+  return (
+    <div className="page page-fade">
+      <div className="discover-header"><div className="discover-title">Admin Panel</div><div className="discover-subtitle">Moderation & content review</div></div>
+      <div className="padded">
+        <div className="stat-grid">{[{n:"3",l:"Reported"},{n:"1",l:"Flagged"},{n:"124",l:"Live Motives"},{n:"8",l:"Verify Requests"}].map(s=><div key={s.l} className="stat-card"><div className="stat-num">{s.n}</div><div className="stat-label">{s.l}</div></div>)}</div>
+        <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:14,overflow:"hidden",marginTop:16}}>
+          <div style={{padding:"14px 16px",borderBottom:"1px solid var(--border)",fontWeight:700,fontSize:14}}>Reported Motives</div>
+          <div style={{overflowX:"auto"}}>
+            <table className="admin-table">
+              <thead><tr><th>Event</th><th>Reporter</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>{reported.map(r=>(
+                <tr key={r.id}>
+                  <td style={{fontWeight:600}}>{r.title}</td>
+                  <td style={{color:"var(--text2)"}}>{r.reporter}</td>
+                  <td style={{color:"var(--text2)"}}>{r.reason}</td>
+                  <td><span className={`status-badge status-${r.status}`}>{r.status}</span></td>
+                  <td><div style={{display:"flex",gap:6}}><button style={{fontSize:11,padding:"4px 10px",background:"rgba(34,197,94,0.15)",color:"#22C55E",border:"none",borderRadius:6,cursor:"pointer",fontWeight:700}}>Approve</button><button style={{fontSize:11,padding:"4px 10px",background:"rgba(239,68,68,0.15)",color:"#EF4444",border:"none",borderRadius:6,cursor:"pointer",fontWeight:700}}>Remove</button></div></td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN APP ──
+function App() {
+  const [page, setPage] = useState("landing");
+  const [motives, setMotives] = useState(MOTIVES);
+  const [selected, setSelected] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [dark, setDark] = useState(true);
+  const timer = useRef(null);
+
+  const showToast = msg => {
+    setToast(msg);
+    if(timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(()=>setToast(null), 2500);
+  };
+
+  const renderPage = () => {
+    switch(page) {
+      case "landing": return <Landing setPage={setPage}/>;
+      case "discover": return <Discover motives={motives} setMotives={setMotives} onCardClick={setSelected} showToast={showToast}/>;
+      case "map": return <Discover motives={motives} setMotives={setMotives} onCardClick={setSelected} showToast={showToast} defaultView="map"/>;
+      case "create": return <Create showToast={showToast} setPage={setPage}/>;
+      case "saved": return <Saved motives={motives} setMotives={setMotives} onCardClick={setSelected} showToast={showToast}/>;
+      case "profile": return <Profile setPage={setPage} showToast={showToast} motives={motives}/>;
+      case "host": return <HostDash showToast={showToast} setPage={setPage}/>;
+      case "trust": return <Trust/>;
+      case "admin": return <Admin/>;
+      default: return <Landing setPage={setPage}/>;
+    }
+  };
+
+  const navItems = [{id:"discover",l:"Discover",i:"🔍"},{id:"map",l:"Map",i:"🗺"},{id:"create",l:"Create",i:"＋",s:true},{id:"saved",l:"Saved",i:"🔖"},{id:"profile",l:"Profile",i:"👤"}];
+
+  return (
+    <div className={`app${dark?"":" light-mode"}`}>
+      <nav className="top-nav">
+        <button className="nav-logo" onClick={()=>setPage("landing")}>
+          <span style={{color:"var(--neon)",fontSize:22}}>✦</span> Find My <span>Motive</span>
+        </button>
+        <div className="nav-links">
+          {[{p:"discover",l:"Discover"},{p:"map",l:"Map"},{p:"host",l:"For Hosts"},{p:"trust",l:"Safety"}].map(n=>(
+            <button key={n.p} className={`nav-link${page===n.p?" active":""}`} onClick={()=>setPage(n.p)}>{n.l}</button>
+          ))}
+          <button className="nav-link" style={{fontSize:12,color:"var(--text3)"}} onClick={()=>setPage("admin")}>Admin</button>
+        </div>
+        <div className="nav-actions">
+          <button className="btn-icon" onClick={()=>setDark(d=>!d)}>{dark?"☀️":"🌙"}</button>
+          <button className="btn-ghost" onClick={()=>setShowAuth(true)}>Sign In</button>
+          <button className="btn-primary" onClick={()=>setPage("create")}>＋ Create</button>
+        </div>
+      </nav>
+
+      {renderPage()}
+
+      <nav className="bottom-nav">
+        {navItems.map(item=>(
+          <button key={item.id} className={`bnav-item${page===item.id?" active":""}`} onClick={()=>setPage(item.id)}>
+            <span className="bnav-icon">
+              {item.s ? <div className="bnav-create-btn">{item.i}</div> : item.i}
+            </span>
+            <span>{item.l}</span>
+          </button>
+        ))}
+      </nav>
+
+      {selected && (
+        <EventModal
+          m={selected}
+          onClose={()=>setSelected(null)}
+          onSave={id=>{setMotives(ms=>ms.map(m=>m.id===id?{...m,saved:!m.saved}:m));setSelected(p=>p?{...p,saved:!p.saved}:p);}}
+          onRSVP={id=>{setMotives(ms=>ms.map(m=>m.id===id?{...m,rsvp:!m.rsvp}:m));setSelected(p=>p?{...p,rsvp:!p.rsvp}:p);}}
+          showToast={showToast}
+        />
+      )}
+
+      {showAuth && <AuthModal onClose={()=>setShowAuth(false)} showToast={showToast}/>}
+      {toast && <div className="toast">{toast}</div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
